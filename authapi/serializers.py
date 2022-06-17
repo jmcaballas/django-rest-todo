@@ -43,11 +43,16 @@ class RegisterSerializer(serializers.ModelSerializer):
         if data['password1'] != data['password2']:
             raise serializers.ValidationError("Passwords do not match")
 
+        if len(data['password1']) < 8:
+            raise serializers.ValidationError("Password should be at least 8 characters")
+
+        return data
+
     def create(self, validated_data):
         user = CustomUser.objects.create_user(
             username=validated_data['username'],
             email=validated_data['email'],
-            password=validated_data['password'],
+            password=validated_data['password1'],
             first_name=validated_data['first_name'],
             last_name=validated_data['last_name'],
             date_of_birth=validated_data['date_of_birth'],
