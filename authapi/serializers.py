@@ -20,19 +20,28 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class RegisterSerializer(serializers.ModelSerializer):
+    password1 = serializers.CharField(max_length=50)
+    password2 = serializers.CharField(max_length=50)
+    
     class Meta:
         model = CustomUser
         fields = [
             'username',
             'email',
-            'password',
+            'password1',
+            'password2',
             'first_name',
             'last_name',
             'date_of_birth',
         ]
         extra_kwargs = {
-            'password': {'write_only': True},
+            'password1': {'write_only': True},
+            'password2': {'write_only': True},
         }
+
+    def validate(self, data):
+        if data['password1'] != data['password2']:
+            raise serializers.ValidationError("Passwords do not match")
 
     def create(self, validated_data):
         user = CustomUser.objects.create_user(
