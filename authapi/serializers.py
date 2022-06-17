@@ -1,3 +1,5 @@
+import re
+
 from rest_framework import serializers
 
 from django.contrib.auth import authenticate
@@ -45,6 +47,9 @@ class RegisterSerializer(serializers.ModelSerializer):
 
         if len(data['password1']) < 8:
             raise serializers.ValidationError("Password should be at least 8 characters")
+
+        if re.search(r'\d', data['password1']) == None:
+            raise serializers.ValidationError("Password should have at least 1 digit")
 
         return data
 
