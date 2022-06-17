@@ -51,6 +51,12 @@ class RegisterSerializer(serializers.ModelSerializer):
         if re.search(r'\d', data['password1']) == None:
             raise serializers.ValidationError("Password should have at least 1 digit")
 
+        if re.search(r'[A-Z]', data['password1']) == None:
+            raise serializers.ValidationError("Password should have at least 1 uppercase letter")
+
+        if re.search(r'[a-z]', data['password1']) == None:
+            raise serializers.ValidationError("Password should have at least 1 lowercase letter")
+
         return data
 
     def create(self, validated_data):
