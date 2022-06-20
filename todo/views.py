@@ -16,6 +16,12 @@ class ToDoList(APIView):
         headers = {}
         headers['X-Total-Count'] = len(todos)
 
+        try:
+            start = request.GET.get('_start')
+            todos = todos.filter(id__gte=start)
+        except:
+            pass
+
         page_number = self.request.query_params.get('page_number', 1)
         page_size = self.request.query_params.get('page_size', 20)
         paginator = Paginator(todos, page_size)
