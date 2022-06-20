@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'authapi',
     'rest_framework',
     'knox',
+    'todo',
 ]
 
 MIDDLEWARE = [
