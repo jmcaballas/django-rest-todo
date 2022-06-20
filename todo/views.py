@@ -29,3 +29,25 @@ class ToDoList(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ToDoDetail(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_object(self, todo_id, user_id):
+        try:
+            return ToDo.objects.get(id=todo_id, user=user_id)
+        except ToDo.DoesNotExist:
+            return none
+
+    def get(self, request, todo_id, *args, **kwargs):
+        todo_instance = self.get_object(todo_id, request.user.id)
+
+        if not todo_instance:
+            return Response(
+                {"res": "Object with todo id does not exist"},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        serializer = ToDoSerializer(todo_instance)
+        return Response(serializer.data, status=status.HTTP_200_OK)
