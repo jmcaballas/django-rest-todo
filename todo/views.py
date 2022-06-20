@@ -11,8 +11,10 @@ class ToDoList(APIView):
 
     def get(self, request, *args, **kwargs):
         todos = ToDo.objects.filter(user=request.user.id)
+        headers = {}
+        headers['X-Total-Count'] = len(todos)
         serializer = ToDoSerializer(todos, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.data, headers=headers, status=status.HTTP_200_OK)
 
     def post(self, request, *args, **kwargs):
         data = {
