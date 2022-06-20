@@ -2,6 +2,8 @@ from rest_framework import permissions , status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from django.core.paginator import Paginator
+
 from .models import ToDo
 from .serializers import ToDoSerializer
 
@@ -13,7 +15,12 @@ class ToDoList(APIView):
         todos = ToDo.objects.filter(user=request.user.id)
         headers = {}
         headers['X-Total-Count'] = len(todos)
-        serializer = ToDoSerializer(todos, many=True)
+
+        page_number = self.request.query_params.get('page_number', 1)
+        page_size = self.request.query_params.get('page_size', 20)
+        paginator = Paginator(todos, page_size)
+
+        serializer = ToDoSerializer(paginator.page(page_number), many=True)
         return Response(serializer.data, headers=headers, status=status.HTTP_200_OK)
 
     def post(self, request, *args, **kwargs):
