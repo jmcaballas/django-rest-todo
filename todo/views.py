@@ -51,3 +51,26 @@ class ToDoDetail(APIView):
 
         serializer = ToDoSerializer(todo_instance)
         return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    def put(self, request, todo_id, *args, **kwargs):
+        todo_instance = self.get_object(todo_id, request.user.id)
+
+        if not todo_instance:
+            return Response(
+                {"res": "Object with todo id does not exists"}, 
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        data = {
+            'title': request.data.get('title'),
+            'description': request.data.get('description'),
+            'due': request.data.get('due'),
+            'completed': request.data.get('completed'),
+            'user': request.data.get('user'),
+        }
+        serializer = ToDoSerializer(instance=todo_instance, data=data)
+        
+        if serializer.is_valid():
+            serializer.save(user=self.request.user)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
